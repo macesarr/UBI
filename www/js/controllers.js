@@ -1,15 +1,24 @@
 angular.module('starter.controllers', [])
 
-    .controller('LoginCtrl', function($scope, LoginService, $ionicPopup, $state, $ionicLoading){
+    .controller('LoginCtrl', function($scope, LoginService, $ionicPopup, $state, $ionicLoading, $ionicHistory){
 	$scope.data = {};
 	$scope.login = function(){
+	    window.localStorage.clear();
+	    $ionicHistory.clearCache();
+	    $ionicHistory.clearHistory();
 	    $ionicLoading.show({
 		template: '<ion-spinner></ion-spinner> <br/> Recuperando datos del servidor.'
 	    });
 	    LoginService.loginUser($scope.data.email, $scope.data.password).then(function(data){
 		$ionicLoading.hide();
 		if(data.status == 200 && data.success == 1){
-		    window.localStorage.setItem("email", $scope.data.email);
+
+		    var names = data.USERS[0].USER_NAMES + ' ' + data.USERS[0].USER_LASTNAMES;
+		    var id = data.USERS[0].USER_ID;
+		    
+		    window.localStorage.setItem("user_session", names);
+		    window.localStorage.setItem("user_id", id);
+		    
 		    $state.go('tab.dash');
 		}	
 		if(data.status == 200 && data.success == 0){
@@ -23,32 +32,46 @@ angular.module('starter.controllers', [])
     })
 
     .controller('DashCtrl', function($scope, $state) {
-	if(window.localStorage.getItem("email") === "undefined" || window.localStorage.getItem("email") === null) {
-            $state.go('login');
+	
+	var session = window.localStorage.getItem("user_session");
+	console.log(session);
+	if(session == null) {
+	    $state.go('login');
 	}
     })
 
-    .controller('ChatsCtrl', function($scope, Chats) {
-	// With the new view caching in Ionic, Controllers are only called
-	// when they are recreated or on app start, instead of every page change.
-	// To listen for when this page is active (for example, to refresh data),
-	// listen for the $ionicView.enter event:
-	//
-	//$scope.$on('$ionicView.enter', function(e) {
-	//});
+    .controller('ChatsCtrl', function($scope, Chats, $ionicLoading) {
 
-	$scope.chats = Chats.all();
+
+	$ionicLoading.show({
+	    template: '<ion-spinner></ion-spinner> <br/> Obteniendo mensajes.'
+	});
+	$scope.messages = Chats.getMessages().then(function(data){
+	    $ionicLoading.hide();
+	    console.log(data); 
+	});
+	
+	/*
 	$scope.remove = function(chat) {
 	    Chats.remove(chat);
-	};
+	};*/
+
     })
 
     .controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
 	$scope.chat = Chats.get($stateParams.chatId);
     })
 
-    .controller('AccountCtrl', function($scope) {
-	$scope.settings = {
-	    enableFriends: true
-	};
+    .controller('AccountCtrl', function($scope, $ionicHistory, $timeout, $state) {
+	
+	$scope.user = window.localStorage.getItem("user_session");
+	
+	$scope.logout = function(){
+	    $timeout(function () {
+		window.localStorage.clear();
+		$ionicHistory.clearCache();
+		$ionicHistory.clearHistory();
+	    }, 200)
+	    $state.go('login');
+	}
     });
