@@ -41,14 +41,14 @@ angular.module('starter.controllers', [])
     })
 
     .controller('ChatsCtrl', function($scope, Chats, $ionicLoading) {
-
-
+	
 	$ionicLoading.show({
 	    template: '<ion-spinner></ion-spinner> <br/> Obteniendo mensajes.'
 	});
-	$scope.messages = Chats.getMessages().then(function(data){
+	Chats.getMessages(window.localStorage.getItem("user_id")).then(function(data){
 	    $ionicLoading.hide();
-	    console.log(data); 
+	    $scope.messages = data;
+	    console.info(data);
 	});
 	
 	/*

@@ -1,12 +1,11 @@
 <ion-view view-title="Chats">
   <ion-content>
+    
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="message in messages" type="item-text-wrap">
-
-        <h2>{{message.name}}</h2>
-        <p>{{message.lastText}}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i>
-
+      <ion-item  ng-repeat="message in messages" class="item item-text-wrap">
+        <h2>{{message.MESSAGE_SUBJECT}}</h2>
+	<p style="text-align: justify;"><strong>{{message.TYPE_NAME}}: </strong> 
+        {{message.MESSAGE_CONTENT}}</p>
       </ion-item>
     </ion-list>
   </ion-content>

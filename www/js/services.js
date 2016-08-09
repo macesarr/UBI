@@ -58,7 +58,7 @@ angular.module('starter.services', [])
 	}];
 	
 	return {
-	    getMessages: function(){
+	    getMessages: function(id){
 		
 		var link = 'http://localhost:1337/lab.aplicacionescolar.com/messagesUsers/get';
 		//var link = 'http://lab.aplicacionescolar.com/messagesUsers/get';
@@ -68,12 +68,11 @@ angular.module('starter.services', [])
                     }
 		}
 		
-		return $http.post(link, {"student_id": 3265}).then(function(response){
+		return $http.post(link, {"student_id": id}).then(function(response){
 		    return response.data.MESSAGES;
 		}, function(errResponse){
 		    deferred.reject(errResponse);
 		});
-
 	    }
 	}
 	/*
